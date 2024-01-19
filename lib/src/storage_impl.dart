@@ -50,6 +50,13 @@ class GetStorage {
     }
   }
 
+  /// Forces a read from disk operation.
+  /// Useful when working with multiple thread that would otherwise
+  /// get out of sync.
+  Future<void> forceReread() {
+    return _concrete.forceReread();
+  }
+
   /// Reads a value in your container with the given key.
   T? read<T>(String key) {
     return _concrete.read(key);

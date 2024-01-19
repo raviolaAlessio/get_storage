@@ -31,6 +31,9 @@ class StorageImpl {
     return _writeToStorage(subject.value);
   }
 
+  forceReread() {}
+
+
   T? read<T>(String key) {
     return subject.value[key] as T?;
   }

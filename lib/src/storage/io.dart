@@ -53,6 +53,11 @@ class StorageImpl {
     );
   }
 
+  forceReread() async {
+    RandomAccessFile _file = await _getRandomFile(forceReread: true);
+    return _file.lengthSync() == 0 ? flush() : _readFile(forceReread: true);
+  }
+
   T? read<T>(String key) {
     return subject.value[key] as T?;
   }
@@ -84,9 +89,9 @@ class StorageImpl {
       ..changeValue(key, value);
   }
 
-  Future<void> _readFile() async {
+  Future<void> _readFile({bool forceReread = false}) async {
     try {
-      RandomAccessFile _file = await _getRandomFile();
+      RandomAccessFile _file = await _getRandomFile(forceReread: forceReread);
       _file = await _file.setPosition(0);
       final buffer = new Uint8List(await _file.length());
       await _file.readInto(buffer);
@@ -112,8 +117,8 @@ class StorageImpl {
     }
   }
 
-  Future<RandomAccessFile> _getRandomFile() async {
-    if (_randomAccessfile != null) return _randomAccessfile!;
+  Future<RandomAccessFile> _getRandomFile({bool forceReread = false}) async {
+    if (_randomAccessfile != null && !forceReread) return _randomAccessfile!;
     final fileDb = await _getFile(false);
     _randomAccessfile = await fileDb.open(mode: FileMode.append);
 
